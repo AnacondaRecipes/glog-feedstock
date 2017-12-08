@@ -1,35 +1,53 @@
+{% set name = "glog" %}
 {% set version = "0.3.5" %}
 
 package:
-  name: glog
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  fn: glog-{{ version }}.tar.gz
+  fn: {{name}}-{{ version }}.tar.gz
   url: https://github.com/google/glog/archive/v{{ version }}.tar.gz
   sha256: 7580e408a2c0b5a89ca214739978ce6ff480b5e7d8d7698a2aa92fadc484d1e0
+  patches:
+    - 0001-skip-signal-handler-test-on-ppc64le.patch
 
 build:
-  number: 0
-  skip: true  # [win]
+  number: 1
+  run_exports:
+    # seems to occasionally change ever micro version
+    # https://abi-laboratory.pro/tracker/timeline/glog/
+    - {{ pin_subpackage('glog', max_pin='x.x.x') }}
+
 
 requirements:
   build:
-    - toolchain
-    - autoconf
-    - automake
-    - libtool
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
+    - autoconf    # [unix]
+    - automake    # [unix]
+    - libtool     # [unix]
+    - gflags
+    - cmake       # [win]
+    - msinttypes  # [win and py<35]
 
 test:
   commands:
-    - test -f ${PREFIX}/lib/libglog.dylib            # [osx]
-    - test -f ${PREFIX}/lib/libglog.so               # [linux]
+    - exit $(test -f ${PREFIX}/lib/libglog.dylib)          # [osx]
+    - exit $(test -f ${PREFIX}/lib/libglog.so)             # [linux]
+    - if not exist %LIBRARY_BIN%\glog.dll exit 1           # [win]
+    - conda inspect linkages -p $PREFIX glog  # [unix]
 
 about:
   home: https://github.com/google/glog
-  license: BSD 3-Clause
-  license_file: COPYING
-  summary: C++ implementation of the Google logging module.
+  license: BSD
+  summary: Simple Google-style logging wrapper for Python.
+  description: |
+    glog attempts to greatly simplify logging in Python applications.
+  doc_url: https://pypi.python.org/pypi/glog/0.3.1
+  doc_source_url: https://github.com/benley/python-glog/blob/master/README.rst
+  dev_url: https://github.com/git/git
 
 extra:
   recipe-maintainers:
