@@ -1,21 +1,19 @@
 #!/bin/bash
 
-if [[ ${target_platform} =~ linux* ]]; then
-    # stdc++ 11 is required on Linux
-    CPPFLAGS="${CPPFLAGS//-std=c++17/-std=c++11}"
-    CXXFLAGS="${CXXFLAGS//-std=c++17/-std=c++11}"
-fi
+mkdir build_release
+cd build_release
 
-autoconf
-autoreconf -i
-# copy in newer config scripts for guessing the canonical system name.
-# The latest version are available from:
-# http://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.guess
-cp $RECIPE_DIR/config.guess .
-cp $RECIPE_DIR/config.sub .
-./configure --prefix=$PREFIX
+cmake ..  \
+    -G "Unix Makefiles" \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_PREFIX_PATH="${PREFIX}" \
+    -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
+    -DCMAKE_INSTALL_LIBDIR=lib \
+    -DINSTALL_HEADERS=1 \
+    -DBUILD_SHARED_LIBS=1 \
+    -DBUILD_STATIC_LIBS=1 \
+    -DBUILD_TESTING=1
 make
-# make check fails with gcc 7.2.0
-# https://github.com/google/glog/issues/194
-#make check
+make test || { cat Testing/Temporary/LastTest.log; exit 1; }
 make install
+

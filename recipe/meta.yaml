@@ -1,54 +1,52 @@
-{% set name = "glog" %}
-{% set version = "0.3.5" %}
+{% set version = "0.4.0" %}
+
+{% set posix = 'm2-' if win else '' %}
 
 package:
-  name: {{ name }}
+  name: glog
   version: {{ version }}
 
 source:
-  fn: {{name}}-{{ version }}.tar.gz
+  fn: glog-{{ version }}.tar.gz
   url: https://github.com/google/glog/archive/v{{ version }}.tar.gz
-  sha256: 7580e408a2c0b5a89ca214739978ce6ff480b5e7d8d7698a2aa92fadc484d1e0
+  sha256: f28359aeba12f30d73d9e4711ef356dc842886968112162bc73002645139c39c
   patches:
-    - 0001-skip-signal-handler-test-on-ppc64le.patch
+    # Work around clang bug that does not raise SIGFPE
+    - 0001-Always-raise-SIGFPE.patch  # [osx]
+    - 0003-Remove-non-existent-USAGE-level-from-tests.patch
+    - 0004-Ignore-unmangled-cxx11-symbols.patch
+    # https://github.com/google/glog/pull/447
+    - 447.patch
 
 build:
-  number: 1
+  number: 0
+  skip: true  # [win and vc<14]
+  skip: true # [win32]
   run_exports:
-    # seems to occasionally change ever micro version
-    # https://abi-laboratory.pro/tracker/timeline/glog/
-    - {{ pin_subpackage('glog', max_pin='x.x.x') }}
-
+    - {{ pin_subpackage('glog') }}
 
 requirements:
   build:
+    - cmake
+    - {{ posix }}make
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
   host:
-    - autoconf    # [unix]
-    - automake    # [unix]
-    - libtool     # [unix]
     - gflags
-    - cmake       # [win]
-    - msinttypes  # [win and py<35]
 
 test:
   commands:
-    - exit $(test -f ${PREFIX}/lib/libglog.dylib)          # [osx]
-    - exit $(test -f ${PREFIX}/lib/libglog.so)             # [linux]
-    - if not exist %LIBRARY_BIN%\glog.dll exit 1           # [win]
-    - conda inspect linkages -p $PREFIX glog  # [unix]
+    - test -f ${PREFIX}/lib/libglog${SHLIB_EXT}  # [unix]
+    - if not exist %PREFIX%\\Library\\bin\\glog.dll exit 1  # [win]
 
 about:
   home: https://github.com/google/glog
-  license: BSD
-  summary: Simple Google-style logging wrapper for Python.
-  description: |
-    glog attempts to greatly simplify logging in Python applications.
-  doc_url: https://pypi.python.org/pypi/glog/0.3.1
-  doc_source_url: https://github.com/benley/python-glog/blob/master/README.rst
-  dev_url: https://github.com/git/git
+  license: BSD 3-Clause
+  license_file: COPYING
+  summary: C++ implementation of the Google logging module.
 
 extra:
   recipe-maintainers:
     - jakirkham
+    - xhochy
+

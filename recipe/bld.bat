@@ -1,17 +1,17 @@
-mkdir build
-cd build
+mkdir build_ && cd build_
 
-cmake -G "%CMAKE_GENERATOR%" ^
-    -DCMAKE_PREFIX_PATH=%LIBRARY_PREFIX% ^
-    -DCMAKE_INSTALL_PREFIX:PATH=%LIBRARY_PREFIX% ^
-    -DCMAKE_BUILD_TYPE:STRING=Release ^
-    -DBUILD_SHARED_LIBS=True ^
-    -DBUILD_TESTING=OFF ^
-    %SRC_DIR%
+cmake -G "NMake Makefiles" ^
+    -DCMAKE_BUILD_TYPE=Release ^
+    -DCMAKE_PREFIX_PATH="%LIBRARY_PREFIX%" ^
+    -DCMAKE_INSTALL_PREFIX="%LIBRARY_PREFIX%" ^
+    -DBUILD_SHARED_LIBS=ON ^
+    -DBUILD_TESTING=ON ^
+    ..
 if errorlevel 1 exit 1
 
-cmake --build . --config Release
+cmake --build . --config Release --target install
 if errorlevel 1 exit 1
 
-cmake --build . --target install
+ctest --output-on-failure -E symbolize
 if errorlevel 1 exit 1
+
