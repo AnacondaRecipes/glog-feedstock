@@ -1,6 +1,6 @@
 mkdir build_ && cd build_
 
-cmake -G "NMake Makefiles" ^
+cmake -GNinja ^
     -DCMAKE_BUILD_TYPE=Release ^
     -DCMAKE_PREFIX_PATH="%LIBRARY_PREFIX%" ^
     -DCMAKE_INSTALL_PREFIX="%LIBRARY_PREFIX%" ^
@@ -9,9 +9,5 @@ cmake -G "NMake Makefiles" ^
     ..
 if errorlevel 1 exit 1
 
-cmake --build . --config Release --target install
+ninja install
 if errorlevel 1 exit 1
-
-ctest --output-on-failure -E symbolize
-if errorlevel 1 exit 1
-
