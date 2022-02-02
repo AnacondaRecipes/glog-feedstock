@@ -29,7 +29,7 @@ requirements:
     - {{ compiler('cxx') }}
     - patch       # [not win]
     - m2-patch    # [win]
-   host:
+  host:
     - gflags
 
 test:
