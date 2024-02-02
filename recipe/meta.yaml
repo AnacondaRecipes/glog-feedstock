@@ -15,7 +15,7 @@ source:
     - 0004-Ignore-unmangled-cxx11-symbols.patch
 
 build:
-  number: 0
+  number: 1
   run_exports:
     # Recent releases have been stable
     # https://abi-laboratory.pro/index.php?view=timeline&l=glog
