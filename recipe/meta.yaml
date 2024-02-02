@@ -22,6 +22,8 @@ build:
     # Recent releases have been stable
     # https://abi-laboratory.pro/index.php?view=timeline&l=glog
     - {{ pin_subpackage('glog', max_pin="x.x") }}
+  ignore_run_exports:
+    - gtest
 
 requirements:
   build:
@@ -32,7 +34,8 @@ requirements:
     - patch       # [not win]
     - m2-patch    # [win]
   host:
-    - gflags
+    - gflags 2.2
+    - gtest
 
 test:
   commands:
@@ -42,8 +45,14 @@ test:
 about:
   home: https://github.com/google/glog
   license: BSD-3-Clause
+  license_family: BSD
   license_file: COPYING
   summary: C++ implementation of the Google logging module.
+  description: |
+    Google Logging (glog) is a C++98 library that implements application-level logging. 
+    The library provides logging APIs based on C++-style streams and various helper macros.
+  doc_url: https://github.com/google/glog/
+  dev_url: https://github.com/google/glog/
 
 extra:
   recipe-maintainers:
