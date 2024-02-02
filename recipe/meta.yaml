@@ -16,6 +16,8 @@ source:
 
 build:
   number: 1
+  missing_dso_whitelist:  # [s390x]
+    - '$RPATH/ld64.so.1'  # [s390x]
   run_exports:
     # Recent releases have been stable
     # https://abi-laboratory.pro/index.php?view=timeline&l=glog
