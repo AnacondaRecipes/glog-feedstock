@@ -22,8 +22,6 @@ build:
     # Recent releases have been stable
     # https://abi-laboratory.pro/index.php?view=timeline&l=glog
     - {{ pin_subpackage('glog', max_pin="x.x") }}
-  ignore_run_exports:
-    - gtest
 
 requirements:
   build:
@@ -35,7 +33,6 @@ requirements:
     - m2-patch    # [win]
   host:
     - gflags 2.2
-    - gtest
 
 test:
   commands:
