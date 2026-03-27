@@ -24,7 +24,7 @@ requirements:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
   host:
-    - gflags 2.3.0
+    - gflags {{ gflags }}
 
 test:
   commands:
